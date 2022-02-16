@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package quich;
+
+import "bill.proto";
+import "category.proto";
+import "common-dto.proto";
+import "currency.proto";
+import "purchase.proto";
+import "shop.proto";
+import "income.proto";
+
+service DataController {
+  rpc LoadData(Blank) returns (IResponseDataDto);
+  rpc LoadDataFromDate(IDateDto) returns (IDataChangesDto);
+  rpc SyncWithServer(stream Blank) returns (stream IServerEventDto);
+  rpc IsCredentialsCorrect(Blank) returns (Blank);
+  rpc IsServerAlive(Blank) returns (Blank);
+  rpc SendSyncEvent(IDataChangesDto) returns (Blank);
+}
+
+message IResponseDataDto {
+  repeated IResponseCategoryDto categories = 1;
+  repeated IResponseShortPurchaseDto purchases = 2;
+  repeated IResponseShortBillDto bills = 3;
+  repeated IResponseShopDto shops = 4;
+  repeated IResponseCurrencyDto currencies = 5;
+  repeated IResponseShortPurseDto purses = 6;
+  repeated IResponseShortPurseOperationDto pursesOperations = 7;
+}
+
+message IServerEventDto {
+  string code = 1;
+  string json = 2; // JSON
+}
+
+message IServerEventsDto {
+  repeated IServerEventDto events = 1;
+}
+
+message IDataChangesDto {
+  IEntityChangesDto billChanges = 1;
+  IEntityChangesDto shopChanges = 2;
+  IEntityChangesDto categoryChanges = 3; // And tags too
+  IEntityChangesDto purseChanges = 4;
+  IEntityChangesDto purseOperationChanges = 5;
+}
+
+message IEntityChangesDto {
+  repeated string changed = 1; // New or created
+  repeated string deleted = 2;
+}
